@@ -2,19 +2,26 @@ package com.stuartdb.unittestexample
 
 import com.amazon.deequ.VerificationSuite
 import com.amazon.deequ.checks.{Check, CheckLevel}
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{DataFrame, SparkSession}
 
 
 object pipeline {
   def main(args: Array[String]): Unit = {
+    val inputPath = args(0)
+    val outputPath = args(0)
+
     val spark = SparkSession.builder()
       .master("local")
       .getOrCreate()
 
     spark.sparkContext.addJar("lib/deequ-1.0.2.jar")
 
+    execute(inputPath, outputPath, spark)
+  }
+
+  private def execute(inputPath: String, outputPath: String, spark: SparkSession): DataFrame = {
     val players_by_gameweek = spark.read
-      .parquet("/mnt/stuart/fpl/silver/players_gameweek")
+      .parquet(inputPath)
 
     val verificationResult = VerificationSuite()
       .onData(players_by_gameweek)
@@ -30,9 +37,9 @@ object pipeline {
     team_stats.write
       .format("parquet")
       .mode("overwrite")
-      .save("/mnt/stuart/fpl/silver/stats")
+      .save(outputPath)
 
-    spark.sql(
+    val tableCreationSQL =
       "CREATE TABLE IF NOT EXISTS fpl_silver.team_stats " +
         "( gameweek_id LONG" +
         ", team_name STRING" +
@@ -42,7 +49,10 @@ object pipeline {
         ", total_current_value DOUBLE" +
         ", mean_current_value DOUBLE )" +
         "USING PARQUET " +
-        "LOCATION '/mnt/stuart/fpl/silver/stats'"
-    )
+        s"LOCATION '$outputPath'"
+
+    spark.sql(tableCreationSQL)
+
+    team_stats
   }
 }

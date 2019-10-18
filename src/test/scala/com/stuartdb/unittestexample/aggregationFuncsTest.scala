@@ -1,6 +1,5 @@
 package com.stuartdb.unittestexample
 
-import com.stuartdb.unittestexample.aggregationFuncs
 import org.apache.spark.sql.SparkSession
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
 
