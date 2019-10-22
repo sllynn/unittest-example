@@ -8,7 +8,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 object pipeline {
   def main(args: Array[String]): Unit = {
     val inputPath = args(0)
-    val outputPath = args(0)
+    val outputPath = args(1)
 
     val spark = SparkSession.builder()
       .master("local")

@@ -1,19 +1,18 @@
 package com.stuartdb.unittestexample
 
+import com.amazon.deequ.VerificationSuite
+import com.amazon.deequ.checks.{Check, CheckLevel, CheckStatus}
+import com.amazon.deequ.constraints.ConstrainableDataTypes
 import org.apache.spark.sql.SparkSession
-import org.scalatest.{BeforeAndAfterEach, FunSuite}
+import org.scalatest.FunSuite
 
-class aggregationFuncsTest extends FunSuite with BeforeAndAfterEach {
+class aggregationFuncsTest extends FunSuite {
 
-  var sparkSession: SparkSession = _
-
-  override def beforeEach(): Unit = {
-    sparkSession = SparkSession.builder()
+  lazy val spark: SparkSession =
+    SparkSession.builder()
       .master("local")
       .getOrCreate()
-
-    sparkSession.sparkContext.setLogLevel("ERROR")
-  }
+  spark.sparkContext.setLogLevel("ERROR")
 
   private def truncDouble(x: Double, dp: Int) = {
     val w = math.pow(10, dp)
@@ -21,9 +20,9 @@ class aggregationFuncsTest extends FunSuite with BeforeAndAfterEach {
   }
 
   test("testAggregatePlayerStats") {
-    val aggregator = new aggregationFuncs(sparkSession)
+    val aggregator = new aggregationFuncs(spark)
 
-    val playerData = sparkSession.createDataFrame(
+    val playerData = spark.createDataFrame(
       Seq(
           (8, "Burnley", "Jeff Hendrick",             23,   5.4),
           (8, "Burnley", "Jack Cork",                 15,   5.0),
@@ -54,8 +53,9 @@ class aggregationFuncsTest extends FunSuite with BeforeAndAfterEach {
 
     val aggregatedTeamData = aggregator.aggregateTeamStats(playerData)
     aggregatedTeamData.show()
+
+    // 'classic' unit test using `assert()`
     assert(aggregatedTeamData.columns.length == 7)
-    assert(aggregatedTeamData.count == 1)
     val aggregatedTeamDataLocal = aggregatedTeamData.collect()(0)
     assert(aggregatedTeamDataLocal(1) == "Burnley")
     assert(aggregatedTeamDataLocal(2) == 24)
@@ -63,6 +63,24 @@ class aggregationFuncsTest extends FunSuite with BeforeAndAfterEach {
     assert(truncDouble(aggregatedTeamDataLocal(4).asInstanceOf[Double], 2) == 14.20)
     assert(truncDouble(aggregatedTeamDataLocal(5).asInstanceOf[Double], 2) == 121.50)
     assert(truncDouble(aggregatedTeamDataLocal(6).asInstanceOf[Double], 2) == 5.06)
+
+    // unit test for output data validity / quality using deequ
+    val verificationResult = VerificationSuite()
+      .onData(aggregatedTeamData)
+      .addCheck(
+        Check(CheckLevel.Error, "Data verification test")
+          .hasDataType("gameweek_id", ConstrainableDataTypes.Integral)
+          .hasDataType("team_name", ConstrainableDataTypes.String)
+          .hasDataType("total_points", ConstrainableDataTypes.Integral)
+          .hasDataType("mean_points", ConstrainableDataTypes.Fractional)
+          .hasSize(_ == 1)
+          .isComplete("team_name")
+          .isNonNegative("gameweek_id")
+          .hasSum("player_count", _ == 24)
+      ).run()
+
+    assertResult(CheckStatus.Success)(verificationResult.status)
+
   }
 
 }
