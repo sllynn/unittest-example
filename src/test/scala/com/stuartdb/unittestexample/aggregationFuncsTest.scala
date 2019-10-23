@@ -6,6 +6,9 @@ import com.amazon.deequ.constraints.ConstrainableDataTypes
 import org.apache.spark.sql.SparkSession
 import org.scalatest.FunSuite
 
+case class Player(gameWeekId: Long, teamName: String, playerName: String,
+                   totalPoints: Long, currentValue: Double)
+
 class aggregationFuncsTest extends FunSuite {
 
   lazy val spark: SparkSession =
@@ -22,32 +25,31 @@ class aggregationFuncsTest extends FunSuite {
   test("testAggregatePlayerStats") {
     val aggregator = new aggregationFuncs(spark)
 
-    val playerData = spark.createDataFrame(
-      Seq(
-          (8, "Burnley", "Jeff Hendrick",             23,   5.4),
-          (8, "Burnley", "Jack Cork",                 15,   5.0),
-          (8, "Burnley", "Ben Mee",                   25,   5.0),
-          (8, "Burnley", "Ashley Barnes",             34,   6.5),
-          (8, "Burnley", "Steven Defour",             0,    5.5),
-          (8, "Burnley", "Matthew Lowton",            28,   4.5),
-          (8, "Burnley", "Jay Rodriguez",             11,   5.7),
-          (8, "Burnley", "Ben Gibson",                0,    4.0),
-          (8, "Burnley", "James Tarkowski",           26,   5.0),
-          (8, "Burnley", "Ashley Westwood",           24,   5.4),
-          (8, "Burnley", "Erik Pieters",              34,   4.8),
-          (8, "Burnley", "Daniel Drinkwater",         0,    4.4),
-          (8, "Burnley", "Phil Bardsley",             0,    4.4),
-          (8, "Burnley", "Aaron Lennon",              6,    4.8),
-          (8, "Burnley", "Nick Pope",                 32,   4.6),
-          (8, "Burnley", "Johann Berg Gudmundsson",   17,   5.9),
-          (8, "Burnley", "Joe Hart",                  0,    4.4),
-          (8, "Burnley", "Charlie Taylor",            1,    4.2),
-          (8, "Burnley", "Bailey Peacock Farrell",    0,    4.5),
-          (8, "Burnley", "Dwight McNeil",             29,   6.0),
-          (8, "Burnley", "Robbie Brady",              2,    5.5),
-          (8, "Burnley", "Matej Vydra",               4,    5.4),
-          (8, "Burnley", "Kevin Long",                0,    4.4),
-          (8, "Burnley", "Chris Wood",                30,   6.2)
+    val playerData = spark.createDataFrame(Seq(
+      Player(8, "Burnley", "Jeff Hendrick",             23,   5.4),
+      Player(8, "Burnley", "Jack Cork",                 15,   5.0),
+      Player(8, "Burnley", "Ben Mee",                   25,   5.0),
+      Player(8, "Burnley", "Ashley Barnes",             34,   6.5),
+      Player(8, "Burnley", "Steven Defour",             0,    5.5),
+      Player(8, "Burnley", "Matthew Lowton",            28,   4.5),
+      Player(8, "Burnley", "Jay Rodriguez",             11,   5.7),
+      Player(8, "Burnley", "Ben Gibson",                0,    4.0),
+      Player(8, "Burnley", "James Tarkowski",           26,   5.0),
+      Player(8, "Burnley", "Ashley Westwood",           24,   5.4),
+      Player(8, "Burnley", "Erik Pieters",              34,   4.8),
+      Player(8, "Burnley", "Daniel Drinkwater",         0,    4.4),
+      Player(8, "Burnley", "Phil Bardsley",             0,    4.4),
+      Player(8, "Burnley", "Aaron Lennon",              6,    4.8),
+      Player(8, "Burnley", "Nick Pope",                 32,   4.6),
+      Player(8, "Burnley", "Johann Berg Gudmundsson",   17,   5.9),
+      Player(8, "Burnley", "Joe Hart",                  0,    4.4),
+      Player(8, "Burnley", "Charlie Taylor",            1,    4.2),
+      Player(8, "Burnley", "Bailey Peacock Farrell",    0,    4.5),
+      Player(8, "Burnley", "Dwight McNeil",             29,   6.0),
+      Player(8, "Burnley", "Robbie Brady",              2,    5.5),
+      Player(8, "Burnley", "Matej Vydra",               4,    5.4),
+      Player(8, "Burnley", "Kevin Long",                0,    4.4),
+      Player(8, "Burnley", "Chris Wood",                30,   6.2)
       )
     ).toDF("gameweek_id", "team_name", "player_name", "total_points", "current_value")
 
