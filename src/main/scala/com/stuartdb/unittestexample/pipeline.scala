@@ -1,8 +1,11 @@
 package com.stuartdb.unittestexample
 
 import com.amazon.deequ.VerificationSuite
-import com.amazon.deequ.checks.{Check, CheckLevel}
+import com.amazon.deequ.checks.{Check, CheckLevel, CheckStatus}
 import org.apache.spark.sql.{DataFrame, SparkSession}
+
+
+case class PipelineException(s: String)  extends Exception(s)
 
 
 object pipeline {
@@ -20,6 +23,7 @@ object pipeline {
   }
 
   private def execute(inputPath: String, outputPath: String, spark: SparkSession): DataFrame = {
+
     val players_by_gameweek = spark.read
       .parquet(inputPath)
 
@@ -29,6 +33,10 @@ object pipeline {
         Check(CheckLevel.Error, "Data verification test")
           .isComplete("name") // should never be NULL
       ).run()
+
+    if (verificationResult.status != CheckStatus.Success) {
+      throw PipelineException("Incoming pipeline data does not conform to expectations.")
+    }
 
     val aggregator = new aggregationFuncs(spark)
 
