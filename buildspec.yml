@@ -34,6 +34,8 @@ phases:
 #      - command
   build:
     commands:
+      - CONDA_BASE=$(conda info --base)
+      - $CONDA_BASE/etc/profile.d/conda.sh
       - conda activate dbconnect
       - export SPARK_JARS=$(databricks-connect get-jar-dir)
       - cd $CODEBUILD_SRC_DIR && sbt test
