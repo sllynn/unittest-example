@@ -1,0 +1,78 @@
+version: 0.2
+
+run-as: root
+
+#env:
+#  variables:
+#    key: "value"
+#    key: "value"
+#  parameter-store:
+#    key: "value"
+#    key: "value"
+#  git-credential-helper: yes
+
+proxy:
+  upload-artifacts: yes
+  logs: yes
+
+phases:
+  install:
+    run-as: root
+#    runtime-versions:
+#      runtime: version
+#      runtime: version
+    commands:
+      - cd /root && ./dbconnect-creds.sh
+#      - command
+    finally:
+#      - command
+#      - command
+#  pre_build:
+#    run-as: Linux-user-name
+#    commands:
+#      - command
+#      - command
+#    finally:
+#      - command
+#      - command
+  build:
+    run-as: root
+    commands:
+      - sbt test
+      - sbt package
+#    finally:
+#      - command
+#      - command
+#  post_build:
+#    run-as: Linux-user-name
+#    commands:
+#      - command
+#      - command
+#    finally:
+#      - command
+#      - command
+artifacts:
+  files:
+    - ./target/scala-2.11/unittest-example_2.11-0.1.jar
+#    - location
+  name: pipeline-jar
+  discard-paths: yes
+#  base-directory: location
+#  secondary-artifacts:
+#    artifactIdentifier:
+#      files:
+#        - location
+#        - location
+#      name: secondary-artifact-name
+#      discard-paths: yes
+#      base-directory: location
+#    artifactIdentifier:
+#      files:
+#        - location
+#        - location
+#      discard-paths: yes
+#      base-directory: location
+#cache:
+#  paths:
+#    - path
+#    - path
