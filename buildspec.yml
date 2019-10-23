@@ -34,8 +34,6 @@ phases:
 #      - command
   build:
     commands:
-      - . activate dbconnect
-      - export SPARK_JARS=$(databricks-connect get-jar-dir)
       - cd $CODEBUILD_SRC_DIR && sbt test
       - cd $CODEBUILD_SRC_DIR && sbt package
 #    finally:
