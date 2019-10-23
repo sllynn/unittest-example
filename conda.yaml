@@ -1,0 +1,7 @@
+name: dbconnect
+channels:
+  - defaults
+dependencies:
+  - python=3.7.2
+  - pip:
+    - databricks-connect==5.5.2
