@@ -50,7 +50,7 @@ RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2019.10-Linux-x86_6
 # Create DB Connect
 ADD ./conda.yaml ./conda.yaml
 RUN conda env create -f conda.yaml
-RUN echo "source activate env" >> ~/.bashrc
+RUN echo "source activate dbconnect" >> ~/.bashrc
 RUN echo "export SPARK_LOCAL_HOSTNAME=localhost" >> ~/.bashrc
 
 # Add DB connect credentials update script
