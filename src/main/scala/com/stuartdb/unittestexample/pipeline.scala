@@ -17,8 +17,6 @@ object pipeline {
       .master("local")
       .getOrCreate()
 
-    spark.sparkContext.addJar("lib/deequ-1.0.2.jar")
-
     execute(inputPath, outputPath, spark)
   }
 
