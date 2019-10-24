@@ -38,7 +38,7 @@ This could be set to trigger build and test stages every time code is checked in
 #### Running the tests
 
 1. If your IDE has integration support for _scalatest_, you may be able to run the tests directly from the editor (no special configuration options are required).
-2. Otherwise, create a run task / configuration that calls `sbt test` (to run all tests) or `sbt "testOnly com.stuartdb.unittestexample.pipelineTest"` to just run a single test.
+2. Otherwise, create a run task / configuration that calls `sbt test` (to run all tests) or `sbt "testOnly com.stuartdb.unittestexample.aggregationFuncsTest"` to just run a single test. The `pipelineTest` integration test requires copying the parquet dataset to DBFS in your Databricks workspace.
 
 #### Running the full pipeline
 
