@@ -13,7 +13,9 @@ The objective is to demonstrate how tests and code can be written in a developer
 
 The project also contains a `Dockerfile` and `buildspec.yml` file that would be required to create an AWS CodeBuild CI project.
 
-This could be set to trigger build and test stages every time code is checked in to a given branch of your pipeline's repository or, perhaps more likely, a pull request is raised
+This could be set to trigger build and test stages every time code is checked in to a given branch of your pipeline's repository or, perhaps more likely, a pull request is raised.
+
+Creating and configuring a pipeline such as this is left as an exercise for the curious reader.
 
 #### Pre-requisites
 
@@ -29,18 +31,21 @@ This could be set to trigger build and test stages every time code is checked in
 
 (assumes a compatible IDE with Java 8 and SBT 1.3.2 is already available on your local machine)
 
-1. Create a new Conda environment according to the instructions in the Databricks Connect documentation.
-2. Activate the *dbconnnect* conda environment by running `conda activate dbconnect`.
-3. Install Databricks Connect and run `databricks-connect configure` to enable access to a cluster running in your workspace.
-4. Clone this repository to your local machine and import the sbt project into your IDE. This should automatically download the correct version of Scala and the relevant dependencies (_scalatest_ and _deequ_).
-5. Determine the path to the Databricks Connect Spark JARs by running `databricks-connect get-jar-dir`. Update the value of `spark_libs` in the `build.sbt` file to reflect.
+1. Stand up a new cluster running _Databricks Runtime 6.0 Conda Beta_ in your Databricks workspace. You do not need to install any additional libraries or perform any advanced configuration.
+2. If you haven't already, mount an S3 bucket to the Databricks Filesystem using the instructions [here](https://docs.databricks.com/data/data-sources/aws/amazon-s3.html).
+3. Clone this repository to your local machine and copy the test datasets in `/datasets` to your S3 bucket. Check you can see these files from DBFS.
+4. Create a new Conda environment according to the instructions in the Databricks Connect documentation.
+5. Activate the *dbconnnect* conda environment by running `conda activate dbconnect`.
+6. Install Databricks Connect and run `databricks-connect configure` to enable access to a cluster running in your workspace.
+7. Import the sbt project into your IDE. This should automatically download the correct version of Scala and the relevant dependencies (_scalatest_ and _deequ_).
+8. Determine the path to the Databricks Connect Spark JARs by running `databricks-connect get-jar-dir`. Update the value of `spark_libs` in the `build.sbt` file to reflect.
 
 #### Running the tests
 
 1. If your IDE has integration support for _scalatest_, you may be able to run the tests directly from the editor (no special configuration options are required).
-2. Otherwise, create a run task / configuration that calls `sbt test` (to run all tests) or `sbt "testOnly com.stuartdb.unittestexample.aggregationFuncsTest"` to just run a single test. The `pipelineTest` integration test requires copying the parquet dataset to DBFS in your Databricks workspace.
+2. Otherwise, create a run task / configuration that calls `sbt test` (to run all tests) or `sbt "testOnly com.stuartdb.unittestexample.aggregationFuncsTest"` to just run a single test.
 
 #### Running the full pipeline
 
-1. Copy the parquet dataset to DBFS in your Databricks workspace.
-2. You should now be able to run the pipeline class, providing DBFS input and output paths as arguments to the `main()` method.
+1. Again, if your IDE has integration support for scala classes then you can run the pipeline class directly, providing DBFS input and output paths as arguments to the `main()` method.
+2. Otherwise, create a run task / configuration that calls `sbt "run /dbfs/path/to/input/data /dbfs/path/for/output" `.
